@@ -6,10 +6,9 @@ use crate::components::db::AsyncConnectionPool;
 use crate::components::utils::user_authentication::send_mail::send_mail;
 use crate::components::authentication::database::Database;
 use crate::components::authentication::models::EmailPayload;
-use serde::{Deserialize, Serialize};
 
-pub async fn get_otp(
-    payload: web::Json<EmailPayloadForApi>,
+pub async fn validate_otp(
+    payload: web::Json<EmailPayload>,
     pool: web::Data<Arc<AsyncConnectionPool>>,
 ) -> Result<HttpResponse, actix_web::Error> {
     
@@ -23,7 +22,7 @@ pub async fn get_otp(
         email: payload.email.clone(),
         otp: Some(otp.to_string()),
     };
-    Database::save_otp(db_data, &pool).await.map_err(|e| {
+     Database::compare_otp(db_data, &pool).await.map_err(|e| {
         eprintln!("Failed to save OTP to database: {}", e);
         actix_web::error::ErrorInternalServerError("Database save failed")
     })?;
@@ -31,9 +30,4 @@ pub async fn get_otp(
         "message": "OTP sent and saved successfully",
         "success": true
     })))
-}
-
-#[derive(Deserialize, Serialize, Clone)]
-#[serde(deny_unknown_fields)]pub struct EmailPayloadForApi {
-    pub email: String,
 }

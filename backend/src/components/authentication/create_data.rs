@@ -37,7 +37,6 @@ pub async fn create_data(table: &str, data: Value) -> Result<String, String> {
 
     let values = values?;
 
-    // Prepare the columns and placeholders for the SQL query
     let columns_str = columns.join(", ");
     let placeholders = (1..=columns.len())
         .map(|i| format!("${}", i))
@@ -49,11 +48,9 @@ pub async fn create_data(table: &str, data: Value) -> Result<String, String> {
         table, columns_str, placeholders
     );
 
-    // Convert values to a vector of references for the query execution
     let values_ref: Vec<&(dyn tokio_postgres::types::ToSql + Sync)> =
         values.iter().map(|v| &**v).collect();
 
-    // Execute the query to insert data into the database
     match client.query_one(&query, &values_ref).await {
         Ok(row) => {
             // Log the inserted row

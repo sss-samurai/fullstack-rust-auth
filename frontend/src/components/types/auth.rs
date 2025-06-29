@@ -11,5 +11,9 @@ pub struct SignUpForm {
 #[derive(Clone, PartialEq, Serialize)]
 pub struct OtpForm {
     pub otp: String,
+}
+#[derive(Clone, PartialEq, Serialize)]
+pub struct OtpValidateApi {
+    pub otp: String,
     pub email: String,
 }

@@ -1,15 +1,16 @@
 use crate::components::config::api_path::ApiPath;
+use crate::components::types::auth::{OtpValidateApi, SignUpForm};
 use gloo::console::log;
 use gloo_net::http::{Request, Response};
 use serde::Serialize;
 pub struct AuthenticationApi;
 impl AuthenticationApi {
-    pub async fn get_opt(body: &impl Serialize) -> Result<Response, gloo_net::Error> {
-        Self::post_json("get_otp", body).await
+    pub async fn get_opt(body: &SignUpForm) -> Result<Response, gloo_net::Error> {
+        Self::post_json("get-otp", body).await
     }
 
-    pub async fn validate_opt(body: &impl Serialize) -> Result<Response, gloo_net::Error> {
-        Self::post_json("validate_otp", body).await
+    pub async fn validate_opt(body: &OtpValidateApi) -> Result<Response, gloo_net::Error> {
+        Self::post_json("validate-otp", body).await
     }
 
     async fn post_json(endpoint: &str, body: &impl Serialize) -> Result<Response, gloo_net::Error> {
