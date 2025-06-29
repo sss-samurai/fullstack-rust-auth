@@ -1,0 +1,50 @@
+@mixin icon-size($size) {
+  width: $size;
+  height: $size;
+  color: var(--text-color);
+  transition: color 0.3s ease, transform 0.3s ease;
+
+}
+
+.small-icon {
+  @include icon-size(16px);
+}
+
+.medium-icon {
+  @include icon-size(20px);
+}
+
+.large-icon {
+  @include icon-size(24px);
+}
+
+.xl-icon {
+  @include icon-size(32px);
+}
+
+.xxl-icon {
+  @include icon-size(40px);
+}
+
+
+.icon-button {
+    all: unset;   
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 5px;
+  border-radius: 6px;
+  background-color: transparent;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+
+  &:hover {
+    background-color: var(--hover-primary); // Define this color in your theme
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
+
+
+}

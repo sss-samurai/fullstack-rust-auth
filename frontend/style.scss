@@ -1,0 +1,86 @@
+@import "src/components/main_template";
+@import "src/components/header";
+@import "src/components/sidebar";
+@import "styles/main_styles";
+@import "src/components/utils/main_util";
+@import "src/components/login_and_signin/main_login_and_signin";
+
+.light {
+  --primary-color: #e0ffcd;
+  --secondary-color: #fdffcd;
+  --background-color: #fefefe;
+  --surface-color: #ffebbb;
+  --text-color: #111111;
+  --border-color: #ffcab0;
+
+  --error-color: #e53935;
+  --success-color: #43a047;
+  --warning-color: #ffa000;
+
+  --hover-primary: #d3f4b5;
+  --hover-secondary: #f8f8b5;
+
+  width: 100%;
+  position: fixed;
+  top: 0px;
+  bottom: 0px;
+  right: 0px;
+  left: 0px;
+  height: 100svh;
+  margin: 0px;
+  font-family: "Poppins", sans-serif;
+  color: var(--text-color);
+}
+
+.dark {
+  --primary-color: #7c4dff;
+  --secondary-color: #ff4081;
+  --background-color: #121212;
+  --surface-color: #1e1e1e;
+  --text-color: #f5f5f5;
+  --border-color: #555555;
+
+  --error-color: #ff6b6b;
+  --success-color: #00e676;
+  --warning-color: #ffc400;
+
+  --hover-primary: #b388ff;
+  --hover-secondary: #ff79b0;
+
+  width: 100%;
+  position: fixed;
+  top: 0px;
+  bottom: 0px;
+  right: 0px;
+  left: 0px;
+  height: 100svh;
+  margin: 0px;
+  font-family: "Poppins", sans-serif;
+  color: var(--text-color);
+}
+
+body {
+  width: 100%;
+  position: fixed;
+  top: 0px;
+  bottom: 0px;
+  right: 0px;
+  left: 0px;
+  height: 100svh;
+  margin: 0px;
+  font-family: "Poppins", sans-serif;
+  
+}
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.7); 
+    backdrop-filter: blur(5px);         
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;                        
+}

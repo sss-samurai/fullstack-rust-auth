@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Yew App</title>
+    <!-- in static/index.html or public/index.html -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link data-trunk rel="scss" href="style.scss" />
+  </head>
+
+  <body>
+    <main></main>
+    <script>
+      window.API_BASE_URL = "http://127.0.0.1:8081/";
+    </script>
+    <script type="module">
+      import init from "./yew_app.js";
+      init();
+    </script>
+  </body>
+</html>

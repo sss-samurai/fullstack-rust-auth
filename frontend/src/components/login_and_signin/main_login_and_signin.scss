@@ -1,0 +1,81 @@
+.login-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, #1e3c72, #2a5298, #ff6e7f);
+  background-size: 200% 200%;
+  background-position: left;
+  z-index: 1000;
+  transition: background-position 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.login-container.signup-active {
+  background-position: right;
+}
+
+.login-container.otp-active {
+  background-position: center;
+}
+
+.login-form {
+  background: linear-gradient(135deg, #ff6e7f, #2a5298, #1e3c72);
+  background-size: 200% 200%;
+  background-position: right;
+  padding: 2rem 2.5rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.08);
+  width: 320px;
+  transition: background-position 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.login-form.signup-active {
+  background-position: left;
+}
+
+.login-form.otp-active {
+  background-position: center;
+}
+
+/* The rest of your styles remain unchanged */
+.form-group {
+  margin-bottom: 1.2rem;
+}
+.login-form label {
+  display: block;
+  margin-bottom: 0.3rem;
+  font-weight: 500;
+}
+.login-form input {
+  width: 100%;
+  padding: 0.5rem;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+.login-button {
+  width: 100%;
+  padding: 0.6rem;
+  background: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 0.5rem;
+}
+.form-footer {
+  margin-top: 1rem;
+  text-align: center;
+}
+.signup-link {
+  margin-left: 0.3rem;
+  color: #007bff;
+  text-decoration: none;
+}
+.signup-link:hover {
+  text-decoration: underline;
+}
