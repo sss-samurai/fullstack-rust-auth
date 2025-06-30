@@ -34,6 +34,7 @@ pub async fn get_otp(
 }
 
 #[derive(Deserialize, Serialize, Clone)]
-#[serde(deny_unknown_fields)]pub struct EmailPayloadForApi {
+#[serde(deny_unknown_fields)]
+pub struct EmailPayloadForApi {
     pub email: String,
 }

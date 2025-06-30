@@ -7,7 +7,6 @@ use std::sync::Arc;
 pub struct MyConnection {
     pub client: Client,
 }
-
 impl MyConnection {
 pub async fn new(
     conn_str: &str,
@@ -23,7 +22,6 @@ pub async fn new(
 }
 
 
-    
 }
 
 pub struct AsyncConnectionPool {
