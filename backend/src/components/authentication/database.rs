@@ -139,4 +139,7 @@ impl Database {
             })));
         }
     }
+    pub fn save_temp_email(){
+        
+    }
 }
