@@ -12,8 +12,6 @@ impl Database {
         let Some(conn) = pool.get().await else {
             return Ok(HttpResponse::ServiceUnavailable().body("No DB connection available"));
         };
-
-        // Clean expired or over-attempted OTPs
         if let Err(e) = conn
         .client
         .execute(
@@ -24,8 +22,6 @@ impl Database {
     {
         eprintln!("Cleanup error: {:?}", e);
     }
-
-        // Check if email already has an OTP
         let exists: bool = conn
             .client
             .query_one(
@@ -38,9 +34,7 @@ impl Database {
                 actix_web::error::ErrorInternalServerError("Database error")
             })?
             .get(0);
-
-        // If OTP already exists, just update the attempt count to 9
-        let result = if exists {
+       let result = if exists {
             conn.client
                 .execute(
                     "UPDATE task_backend.email_otps 
@@ -60,7 +54,6 @@ impl Database {
                 )
                 .await
         };
-
         match result {
             Ok(_) => Ok(HttpResponse::Ok().body("OTP saved")),
             Err(e) => {
@@ -71,9 +64,8 @@ impl Database {
             }
         }
     }
-
     pub async fn compare_otp(
-        data: EmailPayload,
+        data: &EmailPayload,
         pool: &AsyncConnectionPool,
     ) -> Result<HttpResponse, Error> {
         let Some(conn) = pool.get().await else {
@@ -96,7 +88,7 @@ impl Database {
                 &[&data.email],
             )
             .await
-            .map_err(|e| actix_web::error::ErrorInternalServerError("Failed to fetch OTP"))?;
+            .map_err(|_e| actix_web::error::ErrorInternalServerError("Failed to fetch OTP"))?;
         let Some(row) = row_opt else {
             return Err(actix_web::error::ErrorBadRequest(json!({
                 "message": "Somthing went wrong, please try again",
@@ -139,7 +131,41 @@ impl Database {
             })));
         }
     }
-    pub fn save_temp_email(){
-        
+    pub async fn save_temp_email(
+        data: EmailPayload,
+        pool: &AsyncConnectionPool,
+    ) -> Result<HttpResponse, Error> {
+        let Some(conn) = pool.get().await else {
+            return Ok(HttpResponse::ServiceUnavailable().body("No DB connection available"));
+        };
+        if let Err(e) = conn
+        .client
+        .execute(
+            "DELETE FROM task_backend.otp_audit_log WHERE expires_at <= NOW();",
+            &[],
+        )
+        .await
+    {
+        eprintln!("Cleanup error: {:?}", e);
+    }
+        let result = conn
+            .client
+            .execute(
+                "INSERT INTO task_backend.otp_audit_log (email) VALUES ($1)",
+                &[&data.email],
+            )
+            .await;
+        match result {
+            Ok(_) => Ok(HttpResponse::Ok().json({
+                serde_json::json!({
+                    "message": "OTP saved successfully",
+                    "success": true
+                })
+            })),
+            Err(_e) => Err(actix_web::error::ErrorInternalServerError(json!({
+                "message": "Some Error Occured Plz Rtry otp validation",
+                "success": false,
+            }))),
+        }
     }
 }
