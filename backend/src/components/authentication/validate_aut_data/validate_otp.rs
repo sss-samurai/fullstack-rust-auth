@@ -14,7 +14,6 @@ pub async fn validate_otp(
         otp: payload.otp.clone(),
     };
     Database::compare_otp(&db_data, &pool).await.map_err(|e| {
-        println!("{:?}", e);
         actix_web::error::ErrorInternalServerError(json!({
             "message": "OTP validation failed",
             "success": false
