@@ -4,6 +4,7 @@ use serde::Deserialize;
 pub struct ApiResponse {
     pub message: String,
     pub success: bool,
+    pub token:Option<String>,
 }
 
 /// Parses the JSON body and returns a typed result

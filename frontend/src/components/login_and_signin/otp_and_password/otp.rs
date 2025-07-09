@@ -9,21 +9,30 @@ use yew::prelude::*;
 #[derive(Properties, PartialEq)]
 pub struct LoginProps {
     pub form_state: UseStateHandle<SignUpForm>,
+    pub dialog_type: UseStateHandle<String>,
+    pub temp_token: UseStateHandle<String>,
 }
 #[function_component(Otp)]
 pub fn otp(props: &LoginProps) -> Html {
     let loading = &use_loading();
     let form_state_otp: UseStateHandle<OtpForm> = use_state(|| OtpForm { otp: "".into() });
+
     let email = props.form_state.email.clone();
+    let dialog_type = props.dialog_type.clone(); 
+    let temp_token = props.temp_token.clone();
+
     let validate_otp: Callback<String> = {
         let loading = loading.clone();
         let email = email.clone();
+
         Callback::from(move |otp_value: String| {
             if !otp_value.is_empty() && !email.is_empty() {
                 let form_data = OtpValidateApi {
                     otp: otp_value.clone(),
                     email: email.clone(),
                 };
+                let dialog_type = dialog_type.clone();
+                let temp_token = temp_token.clone();
                 let loading = loading.clone();
                 spawn_local(async move {
                     loading.set_loading.emit(true);
@@ -31,10 +40,17 @@ pub fn otp(props: &LoginProps) -> Html {
                     match response {
                         Ok(resp) => match resp.text().await {
                             Ok(body_text) => match parse_api_response(&body_text) {
-                                Ok(api_resp) => {
-                                    log!("✅ OTP API success:", api_resp.success);
-                                    loading.set_loading.emit(false);
-                                }
+                                Ok(api_resp) => match api_resp.token {
+                                    Some(token) => {
+                                        temp_token.set(token);
+                                        dialog_type.set("ENTER_PASSWORD".into());
+                                        loading.set_loading.emit(false);
+                                    }
+                                    None => {
+                                        log!("❌ No token received");
+                                        loading.set_loading.emit(false);
+                                    }
+                                },
                                 Err(err) => {
                                     log!("❌ Failed to parse response:", format!("{:?}", err));
                                     loading.set_loading.emit(false);
