@@ -6,6 +6,7 @@ use crate::components::login_and_signin::otp_and_password::enter_password::Enter
 use crate::components::login_and_signin::otp_and_password::otp::Otp;
 use crate::components::types::auth::{SignUpForm, SignUpFormError};
 use crate::context::loading::use_loading;
+
 use wasm_bindgen_futures::spawn_local;
 use web_sys::HtmlInputElement;
 use yew::prelude::*;
@@ -94,6 +95,8 @@ pub fn sign_up(props: &SignUpProps) -> Html {
             }
         })
     };
+
+
     html! {
         <form>
             {
@@ -121,6 +124,7 @@ pub fn sign_up(props: &SignUpProps) -> Html {
                             <button type="button" class="login-button" onclick={on_submit}>
                                 { "Sign Up" }
                             </button>
+
                             <div class="form-footer">
                                 <span>{ "Already have an account?" }</span>
                                 <a href="#" class="signup-link" onclick={props.toggle_form.clone()}>

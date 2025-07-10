@@ -4,6 +4,9 @@
 @import "styles/main_styles";
 @import "src/components/utils/main_util";
 @import "src/components/login_and_signin/main_login_and_signin";
+@import "src/components/login_and_signin/main_login_and_signin";
+@import "src/snack_bar_context/snack_bar_provider";
+
 
 .light {
   --primary-color: #e0ffcd;

@@ -1,7 +1,9 @@
 mod components;
 mod context;
-use components::MainTemplate;
+mod snack_bar_context;
 use crate::context::loading_provider::LoadingProvider;
+use crate::snack_bar_context::snack_bar_provider::SnackbarProvider;
+use components::MainTemplate;
 use yew_router::prelude::*;
 
 use yew::prelude::*;
@@ -11,7 +13,9 @@ fn app() -> Html {
     html! {
         <BrowserRouter>
             <LoadingProvider>
-                <MainTemplate />
+                <SnackbarProvider>
+                    <MainTemplate />
+                </SnackbarProvider>
             </LoadingProvider>
         </BrowserRouter>
     }

@@ -1,4 +1,9 @@
-use crate::components::types::auth::PasswordForm;
+use crate::components::function_hook::trigger_snack::trigger_snack;
+use crate::components::utils::auth::is_valid_password::is_valid_password;
+use crate::{
+    components::types::auth::PasswordForm,
+    snack_bar_context::snack_bar::{SnackbarContext, SnackbarType},
+};
 use web_sys::HtmlInputElement;
 use yew::prelude::*;
 
@@ -10,6 +15,7 @@ pub struct LoginProps {
 #[function_component(EnterPassword)]
 pub fn enter_password(props: &LoginProps) -> Html {
     let temp_token = props.temp_token.clone();
+    let snackbar = use_context::<SnackbarContext>().expect("No SnackbarContext found");
     let form_state_pswd: UseStateHandle<PasswordForm> = use_state(|| PasswordForm {
         _password: "".into(),
         password: "".into(),
@@ -24,15 +30,45 @@ pub fn enter_password(props: &LoginProps) -> Html {
                 match name.as_str() {
                     "_password" => new_state._password = value,
                     "password" => new_state.password = value,
-                    _ => {},
+                    _ => {}
                 }
                 form_state.set(new_state);
             }
         })
     };
-let on_submit={
 
-};
+    let on_submit = {
+        let snackbar = snackbar.clone();
+        let form_state = form_state_pswd.clone();
+        Callback::from(move |_: MouseEvent| {
+            if form_state._password.is_empty() || form_state.password.is_empty() {
+                trigger_snack(
+                    &snackbar,
+                    "Please enter the password",
+                    SnackbarType::Warning,
+                );
+                return;
+            }
+            if form_state._password != form_state.password {
+                trigger_snack(&snackbar, "Passwords do not match", SnackbarType::Error);
+                return;
+            }
+            match is_valid_password(form_state._password.clone()) {
+                true => {
+                    gloo::console::log!("Password is valid and ready to be sent to the backend");
+                    trigger_snack(
+                        &snackbar,
+                        "Password set successfully",
+                        SnackbarType::Success,
+                    );
+                }
+                false => {
+                    trigger_snack(&snackbar, "Invalid password format", SnackbarType::Error);
+                }
+            }
+        })
+    };
+
     html! {
         <>
             <h2>{ "Password" }</h2>
@@ -61,7 +97,7 @@ let on_submit={
                 />
             </div>
                  <button type="button" class="login-button" >
-                 { "Sign Up" }
+                 { "Create Account" }
                  </button>
             <div class="form-footer">
                 <span>{ "Didn't receive the OTP?" }</span>

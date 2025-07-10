@@ -321,6 +321,131 @@
   text-decoration: underline;
 }
 
+.login-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, #1e3c72, #2a5298, #ff6e7f);
+  background-size: 200% 200%;
+  background-position: left;
+  z-index: 1000;
+  transition: background-position 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.login-container.signup-active {
+  background-position: right;
+}
+
+.login-container.otp-active {
+  background-position: center;
+}
+
+.login-form {
+  background: linear-gradient(135deg, #ff6e7f, #2a5298, #1e3c72);
+  background-size: 200% 200%;
+  background-position: right;
+  padding: 2rem 2.5rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.08);
+  width: 320px;
+  transition: background-position 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.login-form.signup-active {
+  background-position: left;
+}
+
+.login-form.otp-active {
+  background-position: center;
+}
+
+/* The rest of your styles remain unchanged */
+.form-group {
+  margin-bottom: 1.2rem;
+}
+
+.login-form label {
+  display: block;
+  margin-bottom: 0.3rem;
+  font-weight: 500;
+}
+
+.login-form input {
+  width: 100%;
+  padding: 0.5rem;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+
+.login-button {
+  width: 100%;
+  padding: 0.6rem;
+  background: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 0.5rem;
+}
+
+.form-footer {
+  margin-top: 1rem;
+  text-align: center;
+}
+
+.signup-link {
+  margin-left: 0.3rem;
+  color: #007bff;
+  text-decoration: none;
+}
+
+.signup-link:hover {
+  text-decoration: underline;
+}
+
+.snackbar {
+  position: fixed;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: white;
+  padding: 12px 24px;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+  z-index: 9999;
+  opacity: 1;
+  animation: fade-in 0.3s ease-in-out;
+  font-weight: 500;
+}
+
+.snackbar.success {
+  background-color: #43a047;
+}
+
+.snackbar.warning {
+  background-color: #ffa000;
+}
+
+.snackbar.error {
+  background-color: #e53935;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 20px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
 .light {
   --primary-color: #e0ffcd;
   --secondary-color: #fdffcd;
@@ -395,4 +520,4 @@ body {
   z-index: 1000;
 }
 
-/*# sourceMappingURL=data:application/json;charset=utf-8,%7B%22version%22:3,%22sourceRoot%22:%22%22,%22sources%22:%5B%22../../src/components/main_template.scss%22,%22../../src/components/header.scss%22,%22../../src/components/sidebar.scss%22,%22../../styles/icon.scss%22,%22../../styles/textfield.scss%22,%22../../src/components/utils/loading/loding_default.scss%22,%22../../src/components/login_and_signin/main_login_and_signin.scss%22,%22../../style.scss%22%5D,%22names%22:%5B%5D,%22mappings%22:%22;AAAA;EACE;EACA;EACA;EACA;EACA;EACA;EACA;EACA;;;AAGF;EACE;EACA;EACA;EACA;EACA;EACA;EACA;EACA;;;AAGF;EACE;EACA;EACA;EACA;EACA;EACA;EACA;EACA;EAEA;EACA;EACA;EACA;;;AAGF;EACE;EACA;EACA;EACA;EACA;EACA;EACA;EACA;EACA;EACA;EACA;EACA;;;AAGF;EACE;EACA;EACA;EACA;EACA;EACA;EACA;EACA;;;AAGF;EACE;EACA;EACA;EACA;EACA;EACA;EACA;EACA;;;ACxEF;EACI;EACA;;;ACFJ;EACE;EACA;EACA;EACA;EACA;EACA;;;AAEF;EACE;EACA;EACA;EACA;EACA;EACA;EACA;EACA;EACA;EACA;EACA;;AAEA;EACE;;AAGF;EACE;;;AClBJ;EAPE,OAQmB;EAPnB,QAOmB;EANnB;EACA;;;AAQF;EAXE,OAYmB;EAXnB,QAWmB;EAVnB;EACA;;;AAYF;EAfE,OAgBmB;EAfnB,QAemB;EAdnB;EACA;;;AAgBF;EAnBE,OAoBmB;EAnBnB,QAmBmB;EAlBnB;EACA;;;AAoBF;EAvBE,OAwBmB;EAvBnB,QAuBmB;EAtBnB;EACA;;;AAyBF;EACI;EACF;EACA;EACA;EACA;EACA;EACA;EACA;EACA;;AAEA;EACE;;AAGF;EACE;;;AC7CJ;EACE;EACA;EACA;EACA;EACA;EACA;EACA;EACA;EACA;EACA;;AAEA;EACE;EACA;EACA;EACA;;AAGF;EACE;EACA;;;AAGJ;EACA;EACA;EACA;EACA;EACA;EACA;EACA;EACA;EACA;;AAEA;EACE;EACA;;AAGF;EACE;EACA;;;ACzCF;EACE;EACA;EACA;EACA;EACA;EACA;EACA;;;AAEF;AAAA;EAEE;EACA;EACA;EACA;EACA;EACA;;;AAEF;EACE;EACA;;;AAEF;EACE;IAAK;;;ACxBP;EACE;EACA;EACA;EACA;EACA;EACA;EACA;EACA;EACA;EACA;EACA;EACA;EACA;;;AAGF;EACE;;;AAGF;EACE;;;AAGF;EACE;EACA;EACA;EACA;EACA;EACA;EACA;EACA;;;AAGF;EACE;;;AAGF;EACE;;;AAGF;AACA;EACE;;;AAEF;EACE;EACA;EACA;;;AAEF;EACE;EACA;EACA;EACA;;;AAEF;EACE;EACA;EACA;EACA;EACA;EACA;EACA;EACA;EACA;;;AAEF;EACE;EACA;;;AAEF;EACE;EACA;EACA;;;AAEF;EACE;;;ACxEF;EACE;EACA;EACA;EACA;EACA;EACA;EAEA;EACA;EACA;EAEA;EACA;EAEA;EACA;EACA;EACA;EACA;EACA;EACA;EACA;EACA;EACA;;;AAGF;EACE;EACA;EACA;EACA;EACA;EACA;EAEA;EACA;EACA;EAEA;EACA;EAEA;EACA;EACA;EACA;EACA;EACA;EACA;EACA;EACA;EACA;;;AAGF;EACE;EACA;EACA;EACA;EACA;EACA;EACA;EACA;EACA;;;AAGF;EACI;EACA;EACA;EACA;EACA;EACA;EACA;EACA;EACA;EACA;EACA%22,%22file%22:%22style.css%22%7D */
+/*# sourceMappingURL=data:application/json;charset=utf-8,%7B%22version%22:3,%22sourceRoot%22:%22%22,%22sources%22:%5B%22../../src/components/main_template.scss%22,%22../../src/components/header.scss%22,%22../../src/components/sidebar.scss%22,%22../../styles/icon.scss%22,%22../../styles/textfield.scss%22,%22../../src/components/utils/loading/loding_default.scss%22,%22../../src/components/login_and_signin/main_login_and_signin.scss%22,%22../../src/snack_bar_context/snack_bar_provider.scss%22,%22../../style.scss%22%5D,%22names%22:%5B%5D,%22mappings%22:%22;AAAA;EACE;EACA;EACA;EACA;EACA;EACA;EACA;EACA;;;AAGF;EACE;EACA;EACA;EACA;EACA;EACA;EACA;EACA;;;AAGF;EACE;EACA;EACA;EACA;EACA;EACA;EACA;EACA;EAEA;EACA;EACA;EACA;;;AAGF;EACE;EACA;EACA;EACA;EACA;EACA;EACA;EACA;EACA;EACA;EACA;EACA;;;AAGF;EACE;EACA;EACA;EACA;EACA;EACA;EACA;EACA;;;AAGF;EACE;EACA;EACA;EACA;EACA;EACA;EACA;EACA;;;ACxEF;EACI;EACA;;;ACFJ;EACE;EACA;EACA;EACA;EACA;EACA;;;AAEF;EACE;EACA;EACA;EACA;EACA;EACA;EACA;EACA;EACA;EACA;EACA;;AAEA;EACE;;AAGF;EACE;;;AClBJ;EAPE,OAQmB;EAPnB,QAOmB;EANnB;EACA;;;AAQF;EAXE,OAYmB;EAXnB,QAWmB;EAVnB;EACA;;;AAYF;EAfE,OAgBmB;EAfnB,QAemB;EAdnB;EACA;;;AAgBF;EAnBE,OAoBmB;EAnBnB,QAmBmB;EAlBnB;EACA;;;AAoBF;EAvBE,OAwBmB;EAvBnB,QAuBmB;EAtBnB;EACA;;;AAyBF;EACI;EACF;EACA;EACA;EACA;EACA;EACA;EACA;EACA;;AAEA;EACE;;AAGF;EACE;;;AC7CJ;EACE;EACA;EACA;EACA;EACA;EACA;EACA;EACA;EACA;EACA;;AAEA;EACE;EACA;EACA;EACA;;AAGF;EACE;EACA;;;AAGJ;EACA;EACA;EACA;EACA;EACA;EACA;EACA;EACA;EACA;;AAEA;EACE;EACA;;AAGF;EACE;EACA;;;ACzCF;EACE;EACA;EACA;EACA;EACA;EACA;EACA;;;AAEF;AAAA;EAEE;EACA;EACA;EACA;EACA;EACA;;;AAEF;EACE;EACA;;;AAEF;EACE;IAAK;;;ACxBP;EACE;EACA;EACA;EACA;EACA;EACA;EACA;EACA;EACA;EACA;EACA;EACA;EACA;;;AAGF;EACE;;;AAGF;EACE;;;AAGF;EACE;EACA;EACA;EACA;EACA;EACA;EACA;EACA;;;AAGF;EACE;;;AAGF;EACE;;;AAGF;AACA;EACE;;;AAEF;EACE;EACA;EACA;;;AAEF;EACE;EACA;EACA;EACA;;;AAEF;EACE;EACA;EACA;EACA;EACA;EACA;EACA;EACA;EACA;;;AAEF;EACE;EACA;;;AAEF;EACE;EACA;EACA;;;AAEF;EACE;;;AA/EF;EACE;EACA;EACA;EACA;EACA;EACA;EACA;EACA;EACA;EACA;EACA;EACA;EACA;;;AAGF;EACE;;;AAGF;EACE;;;AAGF;EACE;EACA;EACA;EACA;EACA;EACA;EACA;EACA;;;AAGF;EACE;;;AAGF;EACE;;;AAGF;AACA;EACE;;;AAEF;EACE;EACA;EACA;;;AAEF;EACE;EACA;EACA;EACA;;;AAEF;EACE;EACA;EACA;EACA;EACA;EACA;EACA;EACA;EACA;;;AAEF;EACE;EACA;;;AAEF;EACE;EACA;EACA;;;AAEF;EACE;;;AC/EF;EACI;EACA;EACA;EACA;EACA;EACA;EACA;EACA;EACA;EACA;EACA;EACA;;;AAGJ;EACI;;;AAGJ;EACI;;;AAGJ;EACI;;;AAGJ;EACI;IACI;IACA;;EAEJ;IACI;IACA;;;ACxBR;EACE;EACA;EACA;EACA;EACA;EACA;EAEA;EACA;EACA;EAEA;EACA;EAEA;EACA;EACA;EACA;EACA;EACA;EACA;EACA;EACA;EACA;;;AAGF;EACE;EACA;EACA;EACA;EACA;EACA;EAEA;EACA;EACA;EAEA;EACA;EAEA;EACA;EACA;EACA;EACA;EACA;EACA;EACA;EACA;EACA;;;AAGF;EACE;EACA;EACA;EACA;EACA;EACA;EACA;EACA;EACA;;;AAGF;EACI;EACA;EACA;EACA;EACA;EACA;EACA;EACA;EACA;EACA;EACA%22,%22file%22:%22style.css%22%7D */

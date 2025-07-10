@@ -1,11 +1,13 @@
 // File: src/context/snackbar.rs
-use yew::prelude::*;
 use gloo::timers::future::sleep;
 use std::time::Duration;
+use yew::prelude::*;
+
+use crate::snack_bar_context::snack_bar::SnackbarType;
 
 #[derive(Clone, PartialEq)]
 pub struct SnackbarContext {
-    pub show: Callback<String>,
+    pub show: Callback<(String, SnackbarType)>,
 }
 
 #[derive(Properties, PartialEq)]
@@ -17,12 +19,15 @@ pub struct SnackbarProviderProps {
 pub fn snackbar_provider(props: &SnackbarProviderProps) -> Html {
     let message = use_state(|| "".to_string());
     let visible = use_state(|| false);
+    let snackbar_type = use_state(|| SnackbarType::Success); // default
 
     let show = {
         let message = message.clone();
         let visible = visible.clone();
-        Callback::from(move |msg: String| {
+        let snackbar_type = snackbar_type.clone();
+        Callback::from(move |(msg, kind): (String, SnackbarType)| {
             message.set(msg);
+            snackbar_type.set(kind.clone());
             visible.set(true);
 
             let visible = visible.clone();
@@ -35,11 +40,17 @@ pub fn snackbar_provider(props: &SnackbarProviderProps) -> Html {
 
     let context = SnackbarContext { show };
 
+    let class = match *snackbar_type {
+        SnackbarType::Success => "snackbar success",
+        SnackbarType::Warning => "snackbar warning",
+        SnackbarType::Error => "snackbar error",
+    };
+
     html! {
         <ContextProvider<SnackbarContext> context={context}>
             { for props.children.iter() }
             if *visible {
-                <div class="snackbar">
+                <div class={class}>
                     { (*message).clone() }
                 </div>
             }
