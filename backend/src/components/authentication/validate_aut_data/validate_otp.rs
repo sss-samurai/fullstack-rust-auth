@@ -21,7 +21,7 @@ pub async fn validate_otp(
     })?;
     let secret = std::env::var("JWT_SECRET").expect("JWT_SECRET must be set");
     let purpose = "create_password";
-    match generate_password_token(&payload.email, &secret, purpose) {
+    match generate_password_token(&payload.email, &secret, purpose,10) {
         Ok(token) => match Database::save_temp_email(db_data, &pool).await {
             Ok(_) => Ok(HttpResponse::Ok().json(json!({
                 "message": "Validated successfully",
