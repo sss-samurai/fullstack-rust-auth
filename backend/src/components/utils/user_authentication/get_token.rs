@@ -9,6 +9,5 @@ pub fn get_token(req: &HttpRequest) -> Result<String, Error> {
             }
         }
     }
-
     Err(ErrorUnauthorized("Invalid or missing token"))
 }

@@ -17,6 +17,9 @@ serde_json = "1.0"
 dotenvy = "0.15.7"
 jsonwebtoken = "9.3.1"
 chrono = "0.4.41"
-
+aes-gcm = "0.10"
+aes = "0.8"
+base64 = "0.21"
+hex = "0.4"
 
 

@@ -1,7 +1,7 @@
 use crate::components::authentication::database::Database;
 use crate::components::authentication::models::EmailPayload;
 use crate::components::db::AsyncConnectionPool;
-use crate::components::utils::user_authentication::generate_password_token::generate_password_token;
+use crate::components::utils::user_authentication::generate_encrypted_token::generate_encrypted_token;
 use actix_web::{HttpResponse, web};
 use serde_json::json;
 use std::sync::Arc;
@@ -19,9 +19,9 @@ pub async fn validate_otp(
             "success": false
         }))
     })?;
-    let secret = std::env::var("JWT_SECRET").expect("JWT_SECRET must be set");
+    let secret = std::env::var("KEY").expect("KEY must be set");
     let purpose = "create_password";
-    match generate_password_token(&payload.email, &secret, purpose,10) {
+    match generate_encrypted_token(&payload.email, &secret, purpose, 10) {
         Ok(token) => match Database::save_temp_email(db_data, &pool).await {
             Ok(_) => Ok(HttpResponse::Ok().json(json!({
                 "message": "Validated successfully",
