@@ -21,5 +21,7 @@ aes-gcm = "0.10"
 aes = "0.8"
 base64 = "0.21"
 hex = "0.4"
-
+argon2 = "0.5"
+password-hash = "0.5"
+rand_core = "0.6"
 

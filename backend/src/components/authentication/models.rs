@@ -11,3 +11,7 @@ pub struct Claims {
     pub exp: usize,
     pub purpose: String,
 }
+#[derive(Debug, Serialize, Deserialize)]
+pub struct PasswordClaims {
+    pub password: String,
+}

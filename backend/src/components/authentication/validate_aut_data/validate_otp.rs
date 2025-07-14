@@ -20,7 +20,7 @@ pub async fn validate_otp(
         }))
     })?;
     let secret = std::env::var("KEY").expect("KEY must be set");
-    let purpose = "create_password";
+    let purpose = "create_user";
     match generate_encrypted_token(&payload.email, &secret, purpose, 10) {
         Ok(token) => match Database::save_temp_email(db_data, &pool).await {
             Ok(_) => Ok(HttpResponse::Ok().json(json!({

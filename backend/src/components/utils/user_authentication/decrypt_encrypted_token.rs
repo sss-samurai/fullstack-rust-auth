@@ -12,43 +12,30 @@ pub struct Claims {
     pub iat: usize,
     pub purpose: String,
 }
-
 pub fn decrypt_encrypted_token(
     token: &str,
     secret: &str,
 ) -> Result<Claims, Box<dyn std::error::Error>> {
-    // Step 1: Decode from base64
     let encrypted_data = general_purpose::URL_SAFE_NO_PAD.decode(token)?;
-
-    // Step 2: Split into nonce (first 12 bytes) and ciphertext (rest)
     if encrypted_data.len() < 12 {
         return Err("Invalid encrypted data length".into());
     }
     let (nonce_bytes, ciphertext) = encrypted_data.split_at(12);
     let nonce = Nonce::from_slice(nonce_bytes);
-
-    // Step 3: Prepare cipher
     let key_bytes = hex::decode(secret)?;
     if key_bytes.len() != 32 {
         return Err("Invalid AES key length: must be 32 bytes for AES-256-GCM".into());
     }
-
     let key = Key::<Aes256Gcm>::from_slice(&key_bytes);
     let cipher = Aes256Gcm::new(key);
-
-    // Step 4: Decrypt
     let decrypted_data = cipher
         .decrypt(nonce, ciphertext)
         .map_err(|e| format!("decryption failed: {e}"))?;
-
-    // Step 5: Deserialize to Claims
     let claims: Claims = serde_json::from_slice(&decrypted_data)?;
-
-    // Step 6: Check expiration
-    // let now = Utc::now().timestamp() as usize;
-    // if now > claims.exp {
-    //     return Err("Token has expired".into());
-    // }
+    let now = Utc::now().timestamp() as usize;
+    if now > claims.exp {
+        return Err("Token has expired".into());
+    }
 
     Ok(claims)
 }

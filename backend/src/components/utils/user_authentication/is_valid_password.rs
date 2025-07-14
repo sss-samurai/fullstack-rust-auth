@@ -1,7 +1,8 @@
-pub fn is_valid_password(pswd: String) -> bool {
+pub fn is_valid_password(pswd: &String) -> bool {
     if pswd.len() < 8 || pswd.len() > 64 {
         return false;
     }
+
     let mut has_upper = false;
     let mut has_lower = false;
     let mut has_digit = false;
@@ -18,5 +19,6 @@ pub fn is_valid_password(pswd: String) -> bool {
             has_special = true;
         }
     }
+
     has_upper && has_lower && has_digit && has_special
 }
