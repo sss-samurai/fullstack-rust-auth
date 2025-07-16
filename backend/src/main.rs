@@ -13,9 +13,7 @@ use std::sync::Arc;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    dotenv().ok(); // loads .env file
-    print!("{}", "conn_str".to_string());
-
+    dotenv().ok();
     let db_host = env::var("DB_HOST").unwrap_or_else(|_| "localhost".to_string());
     let db_port = env::var("DB_PORT").unwrap_or_else(|_| "5432".to_string());
     let db_user = env::var("DB_USER").unwrap_or_else(|_| "postgres".to_string());

@@ -50,7 +50,7 @@ where
         self.service.poll_ready(ctx)
     }
 
-    fn call(&self, mut req: ServiceRequest) -> Self::Future {
+    fn call(&self,  req: ServiceRequest) -> Self::Future {
         let service = Rc::clone(&self.service);
 
         Box::pin(async move {
@@ -59,6 +59,7 @@ where
             match get_token(req.request()) {
                 Ok(token) => match decrypt_encrypted_token(&token, &secret) {
                     Ok(claims) => {
+                        println!("Decrypted claims: {:?}", claims);
                         req.extensions_mut().insert(claims);
                         service.call(req).await
                     }

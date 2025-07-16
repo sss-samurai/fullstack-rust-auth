@@ -9,6 +9,7 @@ pub struct EmailPayload {
 pub struct Claims {
     pub sub: String,
     pub exp: usize,
+    pub iat: usize,
     pub purpose: String,
 }
 #[derive(Debug, Serialize, Deserialize)]
