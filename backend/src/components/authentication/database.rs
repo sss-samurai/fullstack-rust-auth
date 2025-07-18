@@ -168,4 +168,33 @@ impl Database {
             }))),
         }
     }
+    pub async fn create_new_user(
+        email: &str,
+        pswd: &str,
+        pool: &AsyncConnectionPool,
+    ) -> Result<HttpResponse, Error> {
+        let Some(conn) = pool.get().await else {
+            return Ok(HttpResponse::ServiceUnavailable().body("No DB connection available"));
+        };
+
+        let result = conn
+            .client
+            .execute(
+                "INSERT INTO users (email, password_hash) VALUES ($1, $2)",
+                &[&email, &pswd],
+            )
+            .await;
+        match result {
+            Ok(_) => Ok(HttpResponse::Ok().json({
+                serde_json::json!({
+                    "message": "User created successfully",
+                    "success": true
+                })
+            })),
+            Err(_e) => Err(actix_web::error::ErrorInternalServerError(json!({
+                "message": "Some Error Occured Plz Rtry otp validation",
+                "success": false,
+            }))),
+        }
+    }
 }

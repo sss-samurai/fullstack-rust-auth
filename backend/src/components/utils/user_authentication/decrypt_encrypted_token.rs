@@ -9,7 +9,6 @@ pub fn decrypt_encrypted_token(
     token: &str,
     secret: &str,
 ) -> Result<Claims, Box<dyn std::error::Error>> {
-    println!("Decrypted claims: {:?}", token);
 
     let encrypted_data = general_purpose::URL_SAFE_NO_PAD.decode(token)?;
     if encrypted_data.len() < 12 {
@@ -28,9 +27,8 @@ pub fn decrypt_encrypted_token(
         .map_err(|e| format!("decryption failed: {e}"))?;
     let claims: Claims = serde_json::from_slice(&decrypted_data)?;
     let now = Utc::now().timestamp() as usize;
-    // if now > claims.exp {
-    //     return Err("Token has expired".into());
-    // }
-    println!("Decrypted claims: {:?}", claims);
+    if now > claims.exp {
+        return Err("Token has expired".into());
+    }
     Ok(claims)
 }
