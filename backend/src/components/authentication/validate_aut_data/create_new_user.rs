@@ -9,25 +9,20 @@ use crate::components::{
 use actix_web::{Error, HttpMessage, HttpRequest, HttpResponse, error::ErrorUnauthorized, web};
 use serde_json::json;
 use std::sync::Arc;
-
 pub async fn create_new_user(
     req: HttpRequest,
     payload: web::Json<PasswordClaims>,
     pool: web::Data<Arc<AsyncConnectionPool>>,
 ) -> Result<HttpResponse, Error> {
     let extensions = req.extensions();
-
     if let Some(claims) = extensions.get::<Claims>() {
         println!("Got claims: {:?}", claims);
-
         if claims.purpose != "create_password" {
             return Err(ErrorUnauthorized("Invalid purpose for creating a new user"));
         }
-
         if !is_valid_password(&payload.password) {
             return Err(ErrorUnauthorized("Invalid password"));
         }
-
         match PasswordUtils::hash_password(&payload.password) {
             Ok(hashed_password) => {
                 match Database::create_new_user(&claims.sub, &hashed_password, &pool).await {
@@ -36,7 +31,6 @@ pub async fn create_new_user(
 
                         match (
                             generate_encrypted_token(&claims.sub, &secret, "access_token", 3600),
-                            generate_encrypted_token(&claims.sub, &secret, "id_token", 3600),
                             generate_encrypted_token(
                                 &claims.sub,
                                 &secret,
@@ -44,10 +38,9 @@ pub async fn create_new_user(
                                 2592000,
                             ),
                         ) {
-                            (Ok(access_token), Ok(id_token), Ok(refresh_token)) => {
+                            (Ok(access_token), Ok(refresh_token)) => {
                                 let response = json!({
                                     "access_token": access_token,
-                                    "id_token": id_token,
                                     "refresh_token": refresh_token,
                                     "expires_in": 3600
                                 });

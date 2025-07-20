@@ -34,7 +34,7 @@ impl Database {
                 actix_web::error::ErrorInternalServerError("Database error")
             })?
             .get(0);
-       let result = if exists {
+        let result = if exists {
             conn.client
                 .execute(
                     "UPDATE task_backend.email_otps 
@@ -139,15 +139,15 @@ impl Database {
             return Ok(HttpResponse::ServiceUnavailable().body("No DB connection available"));
         };
         if let Err(e) = conn
-        .client
-        .execute(
-            "DELETE FROM task_backend.otp_audit_log WHERE expires_at <= NOW();",
-            &[],
-        )
-        .await
-    {
-        eprintln!("Cleanup error: {:?}", e);
-    }
+            .client
+            .execute(
+                "DELETE FROM task_backend.otp_audit_log WHERE expires_at <= NOW();",
+                &[],
+            )
+            .await
+        {
+            eprintln!("Cleanup error: {:?}", e);
+        }
         let result = conn
             .client
             .execute(
@@ -176,7 +176,7 @@ impl Database {
         let Some(conn) = pool.get().await else {
             return Ok(HttpResponse::ServiceUnavailable().body("No DB connection available"));
         };
-
+ 
         let result = conn
             .client
             .execute(

@@ -68,7 +68,6 @@ pub fn enter_password(props: &LoginProps) -> Html {
             }
         })
     };
-
     html! {
         <>
             <h2>{ "Password" }</h2>
