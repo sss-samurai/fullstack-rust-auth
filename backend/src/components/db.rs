@@ -1,27 +1,20 @@
-use tokio_postgres::{Client, NoTls, Socket};
-use tokio_postgres::tls::NoTlsStream;
-use tokio::sync::{Mutex, Semaphore};
 use std::collections::VecDeque;
 use std::sync::Arc;
+use tokio::sync::{Mutex, Semaphore};
+use tokio_postgres::tls::NoTlsStream;
+use tokio_postgres::{Client, NoTls, Socket};
 
 pub struct MyConnection {
     pub client: Client,
 }
 impl MyConnection {
-pub async fn new(
-    conn_str: &str,
-) -> Result<
-    (
-        Self,
-        tokio_postgres::Connection<Socket, NoTlsStream>
-    ),
-    tokio_postgres::Error,
-> {
-    let (client, connection) = tokio_postgres::connect(conn_str, NoTls).await?;
-    Ok((MyConnection { client }, connection))
-}
-
-
+    pub async fn new(
+        conn_str: &str,
+    ) -> Result<(Self, tokio_postgres::Connection<Socket, NoTlsStream>), tokio_postgres::Error>
+    {
+        let (client, connection) = tokio_postgres::connect(conn_str, NoTls).await?;
+        Ok((MyConnection { client }, connection))
+    }
 }
 
 pub struct AsyncConnectionPool {

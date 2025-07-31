@@ -1,10 +1,8 @@
-
-
 use actix_web::middleware::Logger;
 use actix_web::{App, HttpServer, web};
 use dotenvy::dotenv;
-mod config;
 mod components;
+mod config;
 use crate::components::db::AsyncConnectionPool;
 use crate::components::router::main_router::main_router;
 use crate::config::cors_config::cors_config;
