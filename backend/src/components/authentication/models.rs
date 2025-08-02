@@ -5,6 +5,7 @@ pub struct EmailPayload {
     pub email: String,
     pub otp: Option<String>,
 }
+
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Claims {
     pub sub: String,

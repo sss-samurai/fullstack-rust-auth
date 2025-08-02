@@ -13,19 +13,19 @@ impl Database {
             return Ok(HttpResponse::ServiceUnavailable().body("No DB connection available"));
         };
         if let Err(e) = conn
-        .client
-        .execute(
-            "DELETE FROM task_backend.email_otps WHERE expires_at <= NOW() OR attempt_count >= 5;",
-            &[],
-        )
-        .await
-    {
-        eprintln!("Cleanup error: {:?}", e);
-    }
+            .client
+            .execute(
+                "DELETE FROM auth_demo.email_otps WHERE expires_at <= NOW() OR attempt_count >= 5;",
+                &[],
+            )
+            .await
+        {
+            eprintln!("Cleanup error: {:?}", e);
+        }
         let exists: bool = conn
             .client
             .query_one(
-                "SELECT EXISTS(SELECT 1 FROM task_backend.email_otps WHERE email = $1)",
+                "SELECT EXISTS(SELECT 1 FROM auth_demo.email_otps WHERE email = $1)",
                 &[&data.email],
             )
             .await
@@ -37,7 +37,7 @@ impl Database {
         let result = if exists {
             conn.client
                 .execute(
-                    "UPDATE task_backend.email_otps 
+                    "UPDATE auth_demo.email_otps
          SET attempt_count = $1,
              expires_at = NOW() + INTERVAL '5 minutes',
              created_at = NOW(),
@@ -49,7 +49,7 @@ impl Database {
         } else {
             conn.client
                 .execute(
-                    "INSERT INTO task_backend.email_otps (email, otp) VALUES ($1, $2)",
+                    "INSERT INTO auth_demo.email_otps (email, otp) VALUES ($1, $2)",
                     &[&data.email, &data.otp],
                 )
                 .await
@@ -74,16 +74,16 @@ impl Database {
         let _ = conn
             .client
             .execute(
-                "DELETE FROM task_backend.email_otps WHERE expires_at <= NOW() OR attempt_count >= 5;",
+                "DELETE FROM auth_demo.email_otps WHERE expires_at <= NOW() OR attempt_count >= 5;",
                 &[],
             )
             .await;
         let row_opt = conn
             .client
             .query_opt(
-                "SELECT otp, attempt_count FROM task_backend.email_otps 
-             WHERE email = $1 
-             ORDER BY created_at DESC 
+                "SELECT otp, attempt_count FROM auth_demo.email_otps
+             WHERE email = $1
+             ORDER BY created_at DESC
              LIMIT 1",
                 &[&data.email],
             )
@@ -100,7 +100,7 @@ impl Database {
         if Some(stored_otp) == data.otp {
             conn.client
                 .execute(
-                    "DELETE FROM task_backend.email_otps WHERE email = $1",
+                    "DELETE FROM auth_demo.email_otps WHERE email = $1",
                     &[&data.email],
                 )
                 .await
@@ -115,8 +115,8 @@ impl Database {
         } else {
             conn.client
                 .execute(
-                    "UPDATE task_backend.email_otps 
-                 SET attempt_count = $1 
+                    "UPDATE auth_demo.email_otps
+                 SET attempt_count = $1
                  WHERE email = $2",
                     &[&(current_attempts + 1), &data.email],
                 )
@@ -141,7 +141,7 @@ impl Database {
         if let Err(e) = conn
             .client
             .execute(
-                "DELETE FROM task_backend.otp_audit_log WHERE expires_at <= NOW();",
+                "DELETE FROM auth_demo.otp_audit_log WHERE expires_at <= NOW();",
                 &[],
             )
             .await
@@ -151,7 +151,7 @@ impl Database {
         let result = conn
             .client
             .execute(
-                "INSERT INTO task_backend.otp_audit_log (email) VALUES ($1)",
+                "INSERT INTO auth_demo.otp_audit_log (email) VALUES ($1)",
                 &[&data.email],
             )
             .await;
@@ -176,7 +176,7 @@ impl Database {
         let Some(conn) = pool.get().await else {
             return Ok(HttpResponse::ServiceUnavailable().body("No DB connection available"));
         };
- 
+
         let result = conn
             .client
             .execute(
