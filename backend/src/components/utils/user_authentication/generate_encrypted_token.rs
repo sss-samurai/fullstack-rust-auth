@@ -31,7 +31,7 @@ pub fn generate_encrypted_token(
     };
 
     let serialized = serde_json::to_vec(&claims)?;
-    let key_bytes = hex::decode(secret)?; 
+    let key_bytes = hex::decode(secret)?;
 
     let key = Key::<Aes256Gcm>::from_slice(&key_bytes);
     let cipher = Aes256Gcm::new(key);
@@ -42,7 +42,7 @@ pub fn generate_encrypted_token(
 
     let ciphertext = cipher
         .encrypt(nonce, serialized.as_ref())
-        .map_err(|e| format!("encryption error: {e}"))?; 
+        .map_err(|e| format!("encryption error: {e}"))?;
 
     let mut encrypted = nonce_bytes.to_vec();
     encrypted.extend_from_slice(&ciphertext);
