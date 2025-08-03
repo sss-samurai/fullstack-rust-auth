@@ -17,8 +17,8 @@ pub async fn create_new_user(
     let extensions = req.extensions();
     if let Some(claims) = extensions.get::<Claims>() {
         println!("Got claims: {:?}", claims);
-        if claims.purpose != "create_password" {
-            return Err(ErrorUnauthorized("Invalid purpose for creating a new user"));
+        if claims.purpose != "create_user" {
+            return Err(ErrorUnauthorized("Invalid Credentials 001"));
         }
         if !is_valid_password(&payload.password) {
             return Err(ErrorUnauthorized("Invalid password"));
@@ -42,7 +42,8 @@ pub async fn create_new_user(
                                 let response = json!({
                                     "access_token": access_token,
                                     "refresh_token": refresh_token,
-                                    "expires_in": 3600
+                                    "expires_in": 3600,
+                                    "success":true
                                 });
                                 Ok(HttpResponse::Ok().json(response))
                             }

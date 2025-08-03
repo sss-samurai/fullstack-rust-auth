@@ -180,7 +180,7 @@ impl Database {
         let result = conn
             .client
             .execute(
-                "INSERT INTO users (email, password_hash) VALUES ($1, $2)",
+                "INSERT INTO auth_demo.users (email, password_hash) VALUES ($1, $2)",
                 &[&email, &pswd],
             )
             .await;
