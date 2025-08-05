@@ -1,7 +1,7 @@
 use crate::components::authentication::get_otp::get_otp;
+use crate::components::authentication::validate_aut_data::get_new_token::get_new_token;
 use crate::components::authentication::validate_aut_data::{
-    validate_otp::validate_otp,
-    create_new_user::create_new_user,
+    create_new_user::create_new_user, validate_otp::validate_otp,
 };
 use crate::components::router::middleware::auth_middleware::AuthMiddleware;
 use actix_web::web;
@@ -16,5 +16,10 @@ pub fn main_router(cfg: &mut web::ServiceConfig) {
         web::scope("/protected")
             .wrap(AuthMiddleware)
             .route("/create-new-user", web::post().to(create_new_user))
+            .service(
+                web::scope("")
+                    .app_data(web::PayloadConfig::new(0))  
+                    .route("/get-new-token", web::post().to(get_new_token))
+            )
     );
 }
