@@ -22,3 +22,11 @@ pub struct OtpValidateApi {
     pub otp: String,
     pub email: String,
 }
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum HttpMethod {
+    GET,
+    POST,
+    PUT,
+    DELETE,
+}

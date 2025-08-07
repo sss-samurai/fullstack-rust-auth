@@ -1,5 +1,6 @@
 mod components;
 mod context;
+mod services;
 mod snack_bar_context;
 use crate::context::loading_provider::LoadingProvider;
 use crate::snack_bar_context::snack_bar_provider::SnackbarProvider;

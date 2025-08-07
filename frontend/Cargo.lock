@@ -2107,6 +2107,7 @@ version = "0.1.0"
 dependencies = [
  "gloo 0.11.0",
  "gloo-net 0.5.0",
+ "js-sys",
  "reqwest",
  "serde",
  "serde_json",
