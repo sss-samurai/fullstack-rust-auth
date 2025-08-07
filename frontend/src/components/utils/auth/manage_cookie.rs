@@ -13,13 +13,9 @@ impl CookieManager {
             .expect("document should be an HtmlDocument")
     }
 
-    pub fn set(name: &str, value: &str, days: i32) {
-        let expires = js_sys::Date::new_0().get_time()
-            + (days as f64) * 24.0 * 60.0 * 60.0 * 1000.0;
-        let expires_str =
-            js_sys::Date::new(&wasm_bindgen::JsValue::from_f64(expires)).to_utc_string();
+    pub fn set(name: &str, value: &str) {
+        let cookie_str = format!("{name}={value}; path=/");
 
-        let cookie_str = format!("{name}={value}; expires={expires_str}; path=/");
         Self::html_document()
             .set_cookie(&cookie_str)
             .expect("Failed to set cookie");
