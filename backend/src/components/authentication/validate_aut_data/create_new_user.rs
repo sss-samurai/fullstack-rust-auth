@@ -30,19 +30,19 @@ pub async fn create_new_user(
                         let secret = std::env::var("KEY").expect("KEY must be set");
 
                         match (
-                            generate_encrypted_token(&claims.sub, &secret, "access_token", 3600),
+                            generate_encrypted_token(&claims.sub, &secret, "access_token", 15),
                             generate_encrypted_token(
                                 &claims.sub,
                                 &secret,
                                 "refresh_token",
-                                2592000,
+                                21600,
                             ),
                         ) {
                             (Ok(access_token), Ok(refresh_token)) => {
                                 let response = json!({
                                     "access_token": access_token,
                                     "refresh_token": refresh_token,
-                                    "expires_in": 3600,
+                                    "expires_in": 15,
                                     "success":true
                                 });
                                 Ok(HttpResponse::Ok().json(response))

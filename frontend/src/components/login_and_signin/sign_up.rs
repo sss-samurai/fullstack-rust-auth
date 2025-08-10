@@ -1,4 +1,4 @@
-use crate::components::api_hook::authentication_api::AuthenticationApi;
+use crate::components::api_hook::authentication_api::{get_signup_otp, AuthenticationApi};
 use crate::components::function_hook::error_class::error_class;
 use crate::components::function_hook::field_validation::validate_email;
 use crate::components::function_hook::parse_api_response::parse_api_response;
@@ -67,7 +67,8 @@ pub fn sign_up(props: &SignUpProps) -> Html {
 
                 spawn_local(async move {
                     loading.set_loading.emit(true);
-                    let response = AuthenticationApi::get_opt(&form_data).await;
+                    // let response = AuthenticationApi::get_opt(&form_data).await;
+                    let response = get_signup_otp(&form_data).await;
                     match response {
                         Ok(resp) => match resp.text().await {
                             Ok(body_text) => match parse_api_response(&body_text) {

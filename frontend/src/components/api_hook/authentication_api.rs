@@ -1,5 +1,6 @@
 use crate::components::config::api_path::ApiPath;
-use crate::components::types::auth::{OtpValidateApi, SignUpForm};
+use crate::components::types::auth::{HttpMethod, OtpValidateApi, SignUpForm};
+use crate::services::session::manage_api;
 use gloo::console::log;
 use gloo_net::http::{Request, Response};
 use serde::Serialize;
@@ -25,3 +26,8 @@ impl AuthenticationApi {
             .await
     }
 }
+
+pub async fn get_signup_otp(body: &SignUpForm) -> Result<Response, gloo_net::Error> {
+    manage_api(HttpMethod::POST, "get-otp", Some(body), false).await
+}
+
