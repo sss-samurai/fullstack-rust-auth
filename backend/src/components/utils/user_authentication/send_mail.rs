@@ -24,7 +24,6 @@ static MAILER: Lazy<Arc<Mutex<AsyncSmtpTransport<Tokio1Executor>>>> = Lazy::new(
 pub async fn send_mail(recipient_email: &str, otp: u32) -> Result<(), String> {
     let sender_email =
         std::env::var("GMAIL_APP_EMAIL").map_err(|_| "Missing GMAIL_APP_EMAIL".to_string())?;
-
     let sender = sender_email
         .parse()
         .map_err(|e| format!("Failed to parse sender email: {}", e))?;
@@ -42,7 +41,7 @@ pub async fn send_mail(recipient_email: &str, otp: u32) -> Result<(), String> {
         )))
         .map_err(|e| format!("Failed to create email body: {}", e))?;
 
-    let mut mailer = MAILER.lock().await;
+    let  mailer = MAILER.lock().await;
 
     mailer
         .send(email)

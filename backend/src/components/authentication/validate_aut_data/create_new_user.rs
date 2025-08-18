@@ -14,6 +14,15 @@ pub async fn create_new_user(
     payload: web::Json<PasswordClaims>,
     pool: web::Data<Arc<AsyncConnectionPool>>,
 ) -> Result<HttpResponse, Error> {
+    let Some(mut conn) = pool.get().await else {
+        return Ok(HttpResponse::ServiceUnavailable().body("No DB connection available"));
+    };
+    let mut tx = conn.client.transaction().await.map_err(|e| {
+        actix_web::error::ErrorInternalServerError(json!({
+            "message": "Failed to start transaction",
+            "error": e.to_string()
+        }))
+    })?;
     let extensions = req.extensions();
     if let Some(claims) = extensions.get::<Claims>() {
         println!("Got claims: {:?}", claims);
@@ -25,18 +34,13 @@ pub async fn create_new_user(
         }
         match PasswordUtils::hash_password(&payload.password) {
             Ok(hashed_password) => {
-                match Database::create_new_user(&claims.sub, &hashed_password, &pool).await {
-                    Ok(_) => {
+                match Database::create_new_user(&claims.sub, &hashed_password, &mut tx).await {
+                    Ok(new_user_id) => {
                         let secret = std::env::var("KEY").expect("KEY must be set");
 
                         match (
                             generate_encrypted_token(&claims.sub, &secret, "access_token", 15),
-                            generate_encrypted_token(
-                                &claims.sub,
-                                &secret,
-                                "refresh_token",
-                                21600,
-                            ),
+                            generate_encrypted_token(&claims.sub, &secret, "refresh_token", 21600),
                         ) {
                             (Ok(access_token), Ok(refresh_token)) => {
                                 let response = json!({

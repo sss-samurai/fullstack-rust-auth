@@ -1,7 +1,10 @@
 use crate::components::authentication::models::EmailPayload;
 use crate::components::db::AsyncConnectionPool;
+use actix_web::error::ErrorInternalServerError;
 use actix_web::{Error, HttpResponse};
 use serde_json::json;
+use tokio_postgres::Transaction;
+
 pub struct Database;
 
 impl Database {
@@ -168,33 +171,50 @@ impl Database {
             }))),
         }
     }
-    pub async fn create_new_user(
+    pub async fn create_new_user<'a>(
         email: &str,
-        pswd: &str,
-        pool: &AsyncConnectionPool,
-    ) -> Result<HttpResponse, Error> {
-        let Some(conn) = pool.get().await else {
-            return Ok(HttpResponse::ServiceUnavailable().body("No DB connection available"));
-        };
-
-        let result = conn
-            .client
-            .execute(
-                "INSERT INTO auth_demo.users (email, password_hash) VALUES ($1, $2)",
-                &[&email, &pswd],
+        password_hash: &str,
+        tx: &Transaction<'a>,
+    ) -> Result<String, actix_web::Error> {
+        let row = tx
+            .query_one(
+                "INSERT INTO auth_demo.users (email, password_hash) VALUES ($1, $2) RETURNING id",
+                &[&email, &password_hash],
             )
-            .await;
-        match result {
-            Ok(_) => Ok(HttpResponse::Ok().json({
-                serde_json::json!({
-                    "message": "User created successfully",
-                    "success": true
-                })
-            })),
-            Err(_e) => Err(actix_web::error::ErrorInternalServerError(json!({
-                "message": "Some Error Occured Plz Rtry otp validation",
-                "success": false,
-            }))),
-        }
+            .await
+            .map_err(|e| ErrorInternalServerError(format!("DB query failed: {}", e)))?;
+
+        let uuid_str: String = row.get("id");
+        Ok(uuid_str)
     }
+    pub async fn create_new_session<'a>(
+    user_id: String,
+    token_id: Option<String>,
+    password_hash: &str,
+    tx: &Transaction<'a>,
+) -> Result<String, actix_web::Error> {
+    if let Some(token_id) = token_id {
+
+        tx.execute(
+            "UPDATE auth_demo.refresh_tokens SET is_active = false WHERE id = $1",
+            &[&token_id],
+        )
+        .await
+        .map_err(|e| {
+            ErrorInternalServerError(format!("Failed to deactivate old token: {}", e))
+        })?;
+    }
+
+    let row = tx
+        .query_one(
+            "INSERT INTO auth_demo.refresh_tokens (user_id, password_hash) VALUES ($1, $2) RETURNING id",
+            &[&user_id, &password_hash],
+        )
+        .await
+        .map_err(|e| ErrorInternalServerError(format!("Failed to create session: {}", e)))?;
+
+    let session_id: String = row.get("id");
+    Ok(session_id)
+}
+
 }
