@@ -1,6 +1,7 @@
-use crate::components::api_hook::authentication_api::AuthenticationApi;
+use crate::components::api_hook::authentication_api::{validate_signup_otp};
 use crate::components::function_hook::parse_api_response::parse_api_response;
 use crate::components::types::auth::{OtpForm, OtpValidateApi, SignUpForm};
+use crate::components::utils::auth::manage_cookie::CookieManager;
 use crate::context::loading::use_loading;
 use gloo::console::log;
 use wasm_bindgen_futures::spawn_local;
@@ -10,7 +11,6 @@ use yew::prelude::*;
 pub struct LoginProps {
     pub form_state: UseStateHandle<SignUpForm>,
     pub dialog_type: UseStateHandle<String>,
-    pub temp_token: UseStateHandle<String>,
 }
 #[function_component(Otp)]
 pub fn otp(props: &LoginProps) -> Html {
@@ -19,7 +19,6 @@ pub fn otp(props: &LoginProps) -> Html {
 
     let email = props.form_state.email.clone();
     let dialog_type = props.dialog_type.clone(); 
-    let temp_token = props.temp_token.clone();
 
     let validate_otp: Callback<String> = {
         let loading = loading.clone();
@@ -32,17 +31,18 @@ pub fn otp(props: &LoginProps) -> Html {
                     email: email.clone(),
                 };
                 let dialog_type = dialog_type.clone();
-                let temp_token = temp_token.clone();
                 let loading = loading.clone();
                 spawn_local(async move {
                     loading.set_loading.emit(true);
-                    let response = AuthenticationApi::validate_opt(&form_data).await;
+                    let response = validate_signup_otp(&form_data).await;
+                    CookieManager::delete("refresh_t");
                     match response {
                         Ok(resp) => match resp.text().await {
                             Ok(body_text) => match parse_api_response(&body_text) {
                                 Ok(api_resp) => match api_resp.token {
                                     Some(token) => {
-                                        temp_token.set(token);
+                                        CookieManager::set("refresh_t", &token);
+
                                         dialog_type.set("ENTER_PASSWORD".into());
                                         loading.set_loading.emit(false);
                                     }

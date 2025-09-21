@@ -1,4 +1,4 @@
-use crate::components::api_hook::authentication_api::{get_signup_otp, AuthenticationApi};
+use crate::components::api_hook::authentication_api::{ get_signup_otp};
 use crate::components::function_hook::error_class::error_class;
 use crate::components::function_hook::field_validation::validate_email;
 use crate::components::function_hook::parse_api_response::parse_api_response;
@@ -7,6 +7,7 @@ use crate::components::login_and_signin::otp_and_password::otp::Otp;
 use crate::components::types::auth::{SignUpForm, SignUpFormError};
 use crate::context::loading::use_loading;
 
+use gloo::console::info;
 use wasm_bindgen_futures::spawn_local;
 use web_sys::HtmlInputElement;
 use yew::prelude::*;
@@ -20,8 +21,7 @@ pub fn sign_up(props: &SignUpProps) -> Html {
     let loading = &use_loading();
     let form_state: UseStateHandle<SignUpForm> = use_state(|| SignUpForm { email: "".into() });
     let dialog_type: UseStateHandle<String> = use_state(|| "SIGN_UP".into());
-    let temp_token: UseStateHandle<String> = use_state(|| "".into());
-
+    info!(dialog_type.as_str());
     let form_state_error: UseStateHandle<SignUpFormError> =
         use_state(|| SignUpFormError { email: false });
     let on_input = {
@@ -52,7 +52,7 @@ pub fn sign_up(props: &SignUpProps) -> Html {
         let form_state = form_state.clone();
         let form_state_error = form_state_error.clone();
         let loading = loading.clone();
-        let dialog_type = dialog_type.clone(); // <-- clone here
+        let dialog_type = dialog_type.clone();
 
         Callback::from(move |_e: MouseEvent| {
             let error_data = SignUpFormError {
@@ -67,7 +67,6 @@ pub fn sign_up(props: &SignUpProps) -> Html {
 
                 spawn_local(async move {
                     loading.set_loading.emit(true);
-                    // let response = AuthenticationApi::get_opt(&form_data).await;
                     let response = get_signup_otp(&form_data).await;
                     match response {
                         Ok(resp) => match resp.text().await {
@@ -97,13 +96,12 @@ pub fn sign_up(props: &SignUpProps) -> Html {
         })
     };
 
-
     html! {
         <form>
             {
                 if dialog_type.as_str()=="ENTER_OTP" {
                     html! {
-                        <Otp form_state={form_state.clone()} dialog_type={dialog_type.clone()} temp_token={temp_token.clone()}/>
+                        <Otp form_state={form_state.clone()} dialog_type={dialog_type.clone()} />
                     }
                 } else if dialog_type.as_str()=="SIGN_UP" {
                     html! {
@@ -136,7 +134,7 @@ pub fn sign_up(props: &SignUpProps) -> Html {
                     }
                 }else if dialog_type.as_str()=="ENTER_PASSWORD" {
                     html! {
-                        <EnterPassword  temp_token={temp_token.clone()}/>
+                        <EnterPassword />
                     }
                 } else {
                     html! { <></> }
