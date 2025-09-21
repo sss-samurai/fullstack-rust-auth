@@ -158,6 +158,9 @@ impl Database {
                 &[&data.email],
             )
             .await;
+        {
+            eprintln!("Error While Inserting In Audit: {:?}", result);
+        }
         match result {
             Ok(_) => Ok(HttpResponse::Ok().json({
                 serde_json::json!({
@@ -188,24 +191,23 @@ impl Database {
         Ok(uuid_str)
     }
     pub async fn create_new_session<'a>(
-    user_id: String,
-    token_id: Option<String>,
-    password_hash: &str,
-    tx: &Transaction<'a>,
-) -> Result<String, actix_web::Error> {
-    if let Some(token_id) = token_id {
+        user_id: String,
+        token_id: Option<String>,
+        password_hash: &str,
+        tx: &Transaction<'a>,
+    ) -> Result<String, actix_web::Error> {
+        if let Some(token_id) = token_id {
+            tx.execute(
+                "UPDATE auth_demo.refresh_tokens SET is_active = false WHERE id = $1",
+                &[&token_id],
+            )
+            .await
+            .map_err(|e| {
+                ErrorInternalServerError(format!("Failed to deactivate old token: {}", e))
+            })?;
+        }
 
-        tx.execute(
-            "UPDATE auth_demo.refresh_tokens SET is_active = false WHERE id = $1",
-            &[&token_id],
-        )
-        .await
-        .map_err(|e| {
-            ErrorInternalServerError(format!("Failed to deactivate old token: {}", e))
-        })?;
-    }
-
-    let row = tx
+        let row = tx
         .query_one(
             "INSERT INTO auth_demo.refresh_tokens (user_id, password_hash) VALUES ($1, $2) RETURNING id",
             &[&user_id, &password_hash],
@@ -213,8 +215,7 @@ impl Database {
         .await
         .map_err(|e| ErrorInternalServerError(format!("Failed to create session: {}", e)))?;
 
-    let session_id: String = row.get("id");
-    Ok(session_id)
-}
-
+        let session_id: String = row.get("id");
+        Ok(session_id)
+    }
 }

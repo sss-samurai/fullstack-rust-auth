@@ -30,7 +30,7 @@ pub async fn validate_otp(
             }))),
             Err(_) => Err(actix_web::error::ErrorInternalServerError(json!({
                 "success": false,
-                "message": "Failed to save OTP"
+                "message": "Validation failed"
             }))),
         },
         Err(_) => Err(actix_web::error::ErrorInternalServerError(json!({
