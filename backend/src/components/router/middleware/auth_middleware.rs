@@ -43,6 +43,7 @@ where
         self.service.poll_ready(ctx)
     }
     fn call(&self,  req: ServiceRequest) -> Self::Future {
+        println!("AuthMiddleware: Processing request 1");
         let service = Rc::clone(&self.service);
         Box::pin(async move {
             let secret = std::env::var("KEY").expect("KEY must be set");

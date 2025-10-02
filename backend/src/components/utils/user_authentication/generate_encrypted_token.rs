@@ -5,6 +5,7 @@ use chrono::Utc;
 use hex;
 use rand_core::{OsRng, RngCore};
 use serde::{Deserialize, Serialize};
+use uuid::Uuid;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Claims {
@@ -12,6 +13,7 @@ pub struct Claims {
     pub exp: usize,
     pub iat: usize,
     pub purpose: String,
+    pub uuid: Option<Uuid>
 }
 
 pub fn generate_encrypted_token(
@@ -19,6 +21,7 @@ pub fn generate_encrypted_token(
     secret: &str,
     purpose: &str,
     time_in_minutes: i64,
+    uuid: Option<Uuid>
 ) -> Result<String, Box<dyn std::error::Error>> {
     let now = Utc::now().timestamp() as usize;
     let expiration = now + (time_in_minutes * 60) as usize;
@@ -28,6 +31,7 @@ pub fn generate_encrypted_token(
         exp: expiration,
         iat: now,
         purpose: purpose.to_string(),
+        uuid: uuid
     };
 
     let serialized = serde_json::to_vec(&claims)?;

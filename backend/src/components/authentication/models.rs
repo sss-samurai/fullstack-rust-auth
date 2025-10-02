@@ -1,4 +1,5 @@
 use serde::{Deserialize, Serialize};
+use uuid::Uuid;
 
 #[derive(Deserialize, Serialize, Clone)]
 pub struct EmailPayload {
@@ -12,6 +13,7 @@ pub struct Claims {
     pub exp: usize,
     pub iat: usize,
     pub purpose: String,
+    pub uuid: Option<String>,
 }
 #[derive(Debug, Serialize, Deserialize)]
 pub struct PasswordClaims {

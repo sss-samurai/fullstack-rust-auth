@@ -30,7 +30,7 @@ CREATE TABLE auth_demo.users (
 CREATE TABLE auth_demo.refresh_tokens (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id UUID REFERENCES auth_demo.users(id) ON DELETE CASCADE,
-    password_hash VARCHAR(255) NOT NULL,
     is_active BOOLEAN DEFAULT TRUE,
-    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    deactivated_at TIMESTAMPTZ
 );

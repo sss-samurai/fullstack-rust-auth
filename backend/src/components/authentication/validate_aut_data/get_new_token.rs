@@ -1,8 +1,8 @@
+use crate::components::authentication::models::Claims;
 use crate::components::utils::user_authentication::generate_encrypted_token::generate_encrypted_token;
 use actix_web::{Error, HttpMessage};
 use actix_web::{HttpRequest, HttpResponse, error::ErrorUnauthorized};
 use serde_json::json;
-use crate::components::authentication::models::Claims;
 pub async fn get_new_token(req: HttpRequest) -> Result<HttpResponse, Error> {
     let extensions = req.extensions();
 
@@ -14,8 +14,8 @@ pub async fn get_new_token(req: HttpRequest) -> Result<HttpResponse, Error> {
         }
         let secret = std::env::var("KEY").expect("KEY must be set");
         match (
-            generate_encrypted_token(&claims.sub, &secret, "access_token", 3600),
-            generate_encrypted_token(&claims.sub, &secret, "refresh_token", 2592000),
+            generate_encrypted_token(&claims.sub, &secret, "access_token", 3600, None),
+            generate_encrypted_token(&claims.sub, &secret, "refresh_token", 2592000, None),
         ) {
             (Ok(access_token), Ok(refresh_token)) => {
                 let response = json!({

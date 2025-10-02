@@ -4,6 +4,7 @@ use actix_web::error::ErrorInternalServerError;
 use actix_web::{Error, HttpResponse};
 use serde_json::json;
 use tokio_postgres::Transaction;
+use uuid::Uuid;
 
 pub struct Database;
 
@@ -178,7 +179,19 @@ impl Database {
         email: &str,
         password_hash: &str,
         tx: &Transaction<'a>,
-    ) -> Result<String, actix_web::Error> {
+    ) -> Result<Uuid, actix_web::Error> {
+        let email_exists = tx
+            .query_opt("SELECT 1 FROM auth_demo.users WHERE email = $1", &[&email])
+            .await
+            .map_err(|e| {
+                ErrorInternalServerError(format!("Failed to check email existence: {}", e))
+            })?;
+
+        if email_exists.is_some() {
+            return Err(ErrorInternalServerError(
+                "User with this email already exists",
+            ));
+        }
         let row = tx
             .query_one(
                 "INSERT INTO auth_demo.users (email, password_hash) VALUES ($1, $2) RETURNING id",
@@ -187,15 +200,14 @@ impl Database {
             .await
             .map_err(|e| ErrorInternalServerError(format!("DB query failed: {}", e)))?;
 
-        let uuid_str: String = row.get("id");
+        let uuid_str: Uuid = row.get("id");
         Ok(uuid_str)
     }
     pub async fn create_new_session<'a>(
-        user_id: String,
-        token_id: Option<String>,
-        password_hash: &str,
+        user_id: Uuid,
+        token_id: Option<Uuid>,
         tx: &Transaction<'a>,
-    ) -> Result<String, actix_web::Error> {
+    ) -> Result<Uuid, actix_web::Error> {
         if let Some(token_id) = token_id {
             tx.execute(
                 "UPDATE auth_demo.refresh_tokens SET is_active = false WHERE id = $1",
@@ -208,14 +220,15 @@ impl Database {
         }
 
         let row = tx
-        .query_one(
-            "INSERT INTO auth_demo.refresh_tokens (user_id, password_hash) VALUES ($1, $2) RETURNING id",
-            &[&user_id, &password_hash],
-        )
-        .await
-        .map_err(|e| ErrorInternalServerError(format!("Failed to create session: {}", e)))?;
+            .query_one(
+                "INSERT INTO auth_demo.refresh_tokens (user_id) VALUES ($1) RETURNING id",
+                &[&user_id],
+            )
+            .await
+            .map_err(|e| ErrorInternalServerError(format!("Failed to create session: {}", e)))?;
 
-        let session_id: String = row.get("id");
+        let session_id: Uuid = row.get("id");
+        println!("{:?}", session_id);
         Ok(session_id)
     }
 }
