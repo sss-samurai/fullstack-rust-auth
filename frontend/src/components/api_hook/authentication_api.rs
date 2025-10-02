@@ -10,5 +10,5 @@ pub async fn validate_signup_otp(body: &OtpValidateApi) -> Result<Response, gloo
     manage_api(HttpMethod::POST, "validate-otp", Some(body), false,false).await
 }
 pub async fn sign_up(body: &PasswordPayload) -> Result<Response, gloo_net::Error> {
-    manage_api(HttpMethod::POST, "sign-up", Some(body), true,false).await
+    manage_api(HttpMethod::POST, "protected/create-new-user", Some(body), true,false).await
 }

@@ -1,3 +1,4 @@
+use crate::components::utils::auth::manage_cookie::CookieManager;
 use crate::components::{
     api_hook::authentication_api::sign_up, function_hook::parse_api_response::parse_api_response,
     utils::auth::is_valid_password::is_valid_password,
@@ -90,10 +91,13 @@ pub fn enter_password() -> Html {
                     log!("Passwords do not match. Resetting fields.");
                     return;
                 }
+        //    let val=     CookieManager::get("refresh_t");
+        //                         log!("❌ Failed to parse response:", format!("{:?}", val));
 
                 let response = sign_up(&PasswordPayload {
                     password: pswd.clone(),
                 })
+                
                 .await;
                 set_loading.emit(true);
                 match response {

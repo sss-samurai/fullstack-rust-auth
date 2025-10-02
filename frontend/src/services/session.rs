@@ -1,6 +1,7 @@
 use crate::components::types::auth::HttpMethod;
 use crate::components::utils::auth::manage_cookie::CookieManager;
 use crate::services::request::RequestApi;
+use gloo::console::log;
 use gloo::utils::window;
 use gloo_net::http::Request;
 use gloo_net::http::Response;
@@ -20,11 +21,15 @@ pub async fn manage_api<T: Serialize>(
     use_token: bool,
     session: bool,
 ) -> Result<Response, gloo_net::Error> {
+    let val = CookieManager::get("refresh_t");
+
     let access_token = if use_token {
-        CookieManager::get("acces_t")
+        val
     } else {
+        log!("use_token is false, not fetching access token");
         None
     };
+
     let initial_response = api_function(method, uri, body, access_token.as_deref()).await?;
     if !session {
         return Ok(initial_response);
@@ -63,6 +68,8 @@ pub async fn api_function<T: Serialize>(
     body: Option<&T>,
     token: Option<&str>,
 ) -> Result<Response, gloo_net::Error> {
+    log!("Token at api_function entry: {:?}", token);
+
     match method {
         HttpMethod::GET => RequestApi::get(uri, token).await,
         HttpMethod::POST => RequestApi::post(uri, body.expect("POST requires body"), token).await,

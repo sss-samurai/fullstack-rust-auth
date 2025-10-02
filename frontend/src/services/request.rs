@@ -1,3 +1,4 @@
+use gloo::console::log;
 use gloo_net::http::{Request, Response};
 use serde::Serialize;
 
@@ -15,8 +16,10 @@ impl RequestApi {
         let full_url = format!("{}{}", base_url, uri);
 
         let mut req = Request::post(&full_url).header("Content-Type", "application/json");
+            log!("✅ Token received: {:?}", token);
 
         if let Some(t) = token {
+            log!("✅ Token received: {:?}", t);
             req = req.header("Authorization", &format!("Bearer {}", t));
         }
 
