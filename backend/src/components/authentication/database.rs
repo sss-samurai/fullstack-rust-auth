@@ -1,6 +1,6 @@
 use crate::components::authentication::models::EmailPayload;
 use crate::components::db::AsyncConnectionPool;
-use actix_web::error::ErrorInternalServerError;
+use actix_web::error::{ErrorInternalServerError, ErrorUnauthorized};
 use actix_web::{Error, HttpResponse};
 use serde_json::json;
 use tokio_postgres::Transaction;
@@ -231,4 +231,25 @@ impl Database {
         println!("{:?}", session_id);
         Ok(session_id)
     }
+pub async fn login_user<'a>(
+    email: &str,
+    password_hash: &str,
+    tx: &Transaction<'a>,
+) -> Result<Uuid, Error> {
+    let row = tx
+        .query_opt(
+            "SELECT id FROM auth_demo.users WHERE email = $1 AND password_hash = $2",
+            &[&email, &password_hash],
+        )
+        .await
+        .map_err(|e| ErrorInternalServerError(format!("Database query failed: {}", e)))?;
+
+    let Some(row) = row else {
+        return Err(ErrorUnauthorized("Invalid email or password"));
+    };
+
+    let user_id: Uuid = row.get("id");
+
+    Ok(user_id)
+}
 }

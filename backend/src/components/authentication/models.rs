@@ -19,3 +19,9 @@ pub struct Claims {
 pub struct PasswordClaims {
     pub password: String,
 }
+#[derive(Debug, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct LoginPayload {
+    pub password: String,
+    pub email: String,
+}

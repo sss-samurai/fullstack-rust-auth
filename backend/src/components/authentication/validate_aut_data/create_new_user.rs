@@ -52,7 +52,8 @@ pub async fn create_new_user(
         Err(e) => return Err(ErrorUnauthorized(format!("Password hashing failed: {}", e))),
     };
 
-    let new_user_id = match Database::create_new_user(&claims.sub, &hashed_password, &mut tx).await {
+    let new_user_id = match Database::create_new_user(&claims.sub, &hashed_password, &mut tx).await
+    {
         Ok(id) => id,
         Err(e) => {
             eprintln!("Failed to create user: {}", e);
@@ -78,31 +79,18 @@ pub async fn create_new_user(
 
     println!("Created session ID: {:?}", session_id);
 
-    let access_token = match generate_encrypted_token(
-        &claims.sub,
-        &secret,
-        "access_token",
-        15,
-        Some(session_id),
+    let (access_token, refresh_token) = match (
+        generate_encrypted_token(&claims.sub, &secret, "access_token", 15, Some(session_id)),
+        generate_encrypted_token(
+            &claims.sub,
+            &secret,
+            "refresh_token",
+            21600,
+            Some(session_id),
+        ),
     ) {
-        Ok(token) => token,
-        Err(_) => {
-            return Err(actix_web::error::ErrorInternalServerError(json!({
-                "success": false,
-                "message": "Token generation failed"
-            })));
-        }
-    };
-
-    let refresh_token = match generate_encrypted_token(
-        &claims.sub,
-        &secret,
-        "refresh_token",
-        21600,
-        Some(session_id),
-    ) {
-        Ok(token) => token,
-        Err(_) => {
+        (Ok(at), Ok(rt)) => (at, rt),
+        _ => {
             return Err(actix_web::error::ErrorInternalServerError(json!({
                 "success": false,
                 "message": "Token generation failed"

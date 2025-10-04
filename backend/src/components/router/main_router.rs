@@ -1,4 +1,5 @@
 use crate::components::authentication::get_otp::get_otp;
+use crate::components::authentication::validate_aut_data::create_session::login_get_otp;
 use crate::components::authentication::validate_aut_data::get_new_token::get_new_token;
 use crate::components::authentication::validate_aut_data::{
     create_new_user::create_new_user, validate_otp::validate_otp,
@@ -10,6 +11,7 @@ pub fn main_router(cfg: &mut web::ServiceConfig) {
     // Public routes
     cfg.route("/get-otp", web::post().to(get_otp));
     cfg.route("/validate-otp", web::post().to(validate_otp));
+    cfg.route("/login-get-otp", web::post().to(login_get_otp));
 
     // Protected routes
     cfg.service(
