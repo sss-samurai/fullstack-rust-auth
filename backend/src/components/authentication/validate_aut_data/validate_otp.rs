@@ -13,15 +13,22 @@ pub async fn validate_otp(
         email: payload.email.clone(),
         otp: payload.otp.clone(),
     };
-    Database::compare_otp(&db_data, &pool).await.map_err(|_e| {
-        actix_web::error::ErrorInternalServerError(json!({
-            "message": "OTP validation failed",
-            "success": false
-        }))
-    })?;
+    let otp = payload
+        .otp
+        .as_ref()
+        .ok_or_else(|| actix_web::error::ErrorUnauthorized("Missing OTP"))?;
+
+    Database::compare_otp(&payload.email, &otp, &pool)
+        .await
+        .map_err(|_e| {
+            actix_web::error::ErrorInternalServerError(json!({
+                "message": "OTP validation failed",
+                "success": false
+            }))
+        })?;
     let secret = std::env::var("KEY").expect("KEY must be set");
     let purpose = "create_user";
-    match generate_encrypted_token(&payload.email, &secret, purpose, 10,None) {
+    match generate_encrypted_token(&payload.email, &secret, purpose, 10, None) {
         Ok(token) => match Database::save_temp_email(db_data, &pool).await {
             Ok(_) => Ok(HttpResponse::Ok().json(json!({
                 "message": "Validated successfully",

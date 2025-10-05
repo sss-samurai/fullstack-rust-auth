@@ -1,4 +1,5 @@
-pub mod validate_otp;
 pub mod create_new_user;
 pub mod get_new_token;
-pub mod create_session;
+pub mod validate_otp;
+pub mod login_get_otp;
+pub mod login_otp_validation;

@@ -13,7 +13,7 @@ pub struct Claims {
     pub exp: usize,
     pub iat: usize,
     pub purpose: String,
-    pub uuid: Option<String>,
+    pub uuid: Option<Uuid>,
 }
 #[derive(Debug, Serialize, Deserialize)]
 pub struct PasswordClaims {
@@ -24,4 +24,9 @@ pub struct PasswordClaims {
 pub struct LoginPayload {
     pub password: String,
     pub email: String,
+}
+#[derive(Debug, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct LoginOtp {
+    pub otp: String,
 }

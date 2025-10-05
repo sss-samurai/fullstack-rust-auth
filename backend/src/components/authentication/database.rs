@@ -10,7 +10,8 @@ pub struct Database;
 
 impl Database {
     pub async fn save_otp(
-        data: EmailPayload,
+        email: &String,
+        otp: &str,
         pool: &AsyncConnectionPool,
     ) -> Result<HttpResponse, Error> {
         let Some(conn) = pool.get().await else {
@@ -30,7 +31,7 @@ impl Database {
             .client
             .query_one(
                 "SELECT EXISTS(SELECT 1 FROM auth_demo.email_otps WHERE email = $1)",
-                &[&data.email],
+                &[&email],
             )
             .await
             .map_err(|e| {
@@ -47,14 +48,14 @@ impl Database {
              created_at = NOW(),
              otp = $3
          WHERE email = $2",
-                    &[&0, &data.email, &data.otp],
+                    &[&0, &email, &otp],
                 )
                 .await
         } else {
             conn.client
                 .execute(
                     "INSERT INTO auth_demo.email_otps (email, otp) VALUES ($1, $2)",
-                    &[&data.email, &data.otp],
+                    &[&email, &otp],
                 )
                 .await
         };
@@ -69,7 +70,8 @@ impl Database {
         }
     }
     pub async fn compare_otp(
-        data: &EmailPayload,
+        email: &String,
+        otp: &String,
         pool: &AsyncConnectionPool,
     ) -> Result<HttpResponse, Error> {
         let Some(conn) = pool.get().await else {
@@ -89,7 +91,7 @@ impl Database {
              WHERE email = $1
              ORDER BY created_at DESC
              LIMIT 1",
-                &[&data.email],
+                &[&email],
             )
             .await
             .map_err(|_e| actix_web::error::ErrorInternalServerError("Failed to fetch OTP"))?;
@@ -101,11 +103,11 @@ impl Database {
         };
         let stored_otp: String = row.get("otp");
         let current_attempts: i32 = row.get("attempt_count");
-        if Some(stored_otp) == data.otp {
+        if &stored_otp == otp {
             conn.client
                 .execute(
                     "DELETE FROM auth_demo.email_otps WHERE email = $1",
-                    &[&data.email],
+                    &[&email],
                 )
                 .await
                 .map_err(|e| {
@@ -122,7 +124,7 @@ impl Database {
                     "UPDATE auth_demo.email_otps
                  SET attempt_count = $1
                  WHERE email = $2",
-                    &[&(current_attempts + 1), &data.email],
+                    &[&(current_attempts + 1), &email],
                 )
                 .await
                 .map_err(|e| {
@@ -231,15 +233,14 @@ impl Database {
         println!("{:?}", session_id);
         Ok(session_id)
     }
-pub async fn login_user<'a>(
+    pub async fn login_user<'a>(
     email: &str,
-    password_hash: &str,
     tx: &Transaction<'a>,
-) -> Result<Uuid, Error> {
+) -> Result<(String, Uuid), Error> {
     let row = tx
         .query_opt(
-            "SELECT id FROM auth_demo.users WHERE email = $1 AND password_hash = $2",
-            &[&email, &password_hash],
+            "SELECT id, password_hash FROM auth_demo.users WHERE email = $1",
+            &[&email],
         )
         .await
         .map_err(|e| ErrorInternalServerError(format!("Database query failed: {}", e)))?;
@@ -249,7 +250,8 @@ pub async fn login_user<'a>(
     };
 
     let user_id: Uuid = row.get("id");
+    let password_hash: String = row.get("password_hash");
 
-    Ok(user_id)
+    Ok((password_hash, user_id))
 }
 }

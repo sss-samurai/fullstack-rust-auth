@@ -1,5 +1,4 @@
 use crate::components::authentication::database::Database;
-use crate::components::authentication::models::EmailPayload;
 use crate::components::db::AsyncConnectionPool;
 use crate::components::utils::user_authentication::send_mail::send_mail;
 use actix_web::{HttpResponse, web};
@@ -18,11 +17,8 @@ pub async fn get_otp(
         eprintln!("Failed to send OTP email: {}", e);
         actix_web::error::ErrorInternalServerError("Email send failed")
     })?;
-    let db_data = EmailPayload {
-        email: payload.email.clone(),
-        otp: Some(otp.to_string()),
-    };
-    Database::save_otp(db_data, &pool).await.map_err(|e| {
+
+    Database::save_otp(&payload.email, &otp.to_string(), &pool).await.map_err(|e| {
         eprintln!("Failed to save OTP to database: {}", e);
         actix_web::error::ErrorInternalServerError("Database save failed")
     })?;
