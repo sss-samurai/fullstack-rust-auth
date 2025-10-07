@@ -13,7 +13,8 @@ pub struct Claims {
     pub exp: usize,
     pub iat: usize,
     pub purpose: String,
-    pub uuid: Option<Uuid>,
+    pub session_uuid: Option<Uuid>,
+    pub user_uuid: Option<Uuid>,
 }
 #[derive(Debug, Serialize, Deserialize)]
 pub struct PasswordClaims {

@@ -80,13 +80,21 @@ pub async fn create_new_user(
     println!("Created session ID: {:?}", session_id);
 
     let (access_token, refresh_token) = match (
-        generate_encrypted_token(&claims.sub, &secret, "access_token", 15, Some(session_id)),
+        generate_encrypted_token(
+            &claims.sub,
+            &secret,
+            "access_token",
+            15,
+            Some(session_id),
+            Some(new_user_id),
+        ),
         generate_encrypted_token(
             &claims.sub,
             &secret,
             "refresh_token",
             21600,
             Some(session_id),
+            Some(new_user_id),
         ),
     ) {
         (Ok(at), Ok(rt)) => (at, rt),

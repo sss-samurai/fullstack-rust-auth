@@ -28,7 +28,6 @@ pub async fn login_otp_validation(
         }
     };
 
-
     let extensions = req.extensions();
     let claims = match extensions.get::<Claims>() {
         Some(c) => c,
@@ -58,16 +57,18 @@ pub async fn login_otp_validation(
         })));
     }
 
-    let uuid = match claims.uuid {
+    let user_uuid = match claims.user_uuid {
         Some(id) => id,
         None => {
             drop(tx);
             pool.return_connection(conn).await;
-            return Err(actix_web::error::ErrorUnauthorized("Missing UUID in token claims"));
+            return Err(actix_web::error::ErrorUnauthorized(
+                "Missing UUID in token claims",
+            ));
         }
     };
 
-    let session_id = match Database::create_new_session(uuid, None, &mut tx).await {
+    let session_id = match Database::create_new_session(user_uuid, None, &mut tx).await {
         Ok(id) => id,
         Err(e) => {
             eprintln!("Failed to create session: {}", e);
@@ -81,8 +82,22 @@ pub async fn login_otp_validation(
     };
 
     let (access_token, refresh_token) = match (
-        generate_encrypted_token(&claims.sub, &secret, "access_token", 15, Some(session_id)),
-        generate_encrypted_token(&claims.sub, &secret, "refresh_token", 21600, Some(session_id)),
+        generate_encrypted_token(
+            &claims.sub,
+            &secret,
+            "access_token",
+            15,
+            Some(session_id),
+            Some(user_uuid),
+        ),
+        generate_encrypted_token(
+            &claims.sub,
+            &secret,
+            "refresh_token",
+            21600,
+            Some(session_id),
+            Some(user_uuid),
+        ),
     ) {
         (Ok(at), Ok(rt)) => (at, rt),
         _ => {

@@ -58,16 +58,22 @@ pub async fn login_get_otp(
             eprintln!("Failed to save OTP to database: {}", e);
             actix_web::error::ErrorInternalServerError("Database save failed")
         })?;
-    let login_token =
-        match generate_encrypted_token(&payload.email, &secret, "login_token", 15, Some(user_id)) {
-            Ok(token) => token,
-            Err(_) => {
-                return Err(actix_web::error::ErrorInternalServerError(json!({
-                    "success": false,
-                    "message": "Token generation failed"
-                })));
-            }
-        };
+    let login_token = match generate_encrypted_token(
+        &payload.email,
+        &secret,
+        "login_token",
+        15,
+        None,
+        Some(user_id),
+    ) {
+        Ok(token) => token,
+        Err(_) => {
+            return Err(actix_web::error::ErrorInternalServerError(json!({
+                "success": false,
+                "message": "Token generation failed"
+            })));
+        }
+    };
     Ok(HttpResponse::Ok().json(json!({
         "message": "OTP sent",
         "success": true,

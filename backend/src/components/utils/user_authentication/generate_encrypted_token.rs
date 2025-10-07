@@ -4,24 +4,17 @@ use base64::{Engine as _, engine::general_purpose}; // <-- Add this
 use chrono::Utc;
 use hex;
 use rand_core::{OsRng, RngCore};
-use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
-#[derive(Debug, Serialize, Deserialize)]
-pub struct Claims {
-    pub sub: String,
-    pub exp: usize,
-    pub iat: usize,
-    pub purpose: String,
-    pub uuid: Option<Uuid>
-}
+use crate::components::authentication::models::Claims;
 
 pub fn generate_encrypted_token(
     email: &str,
     secret: &str,
     purpose: &str,
     time_in_minutes: i64,
-    uuid: Option<Uuid>
+    session_uuid: Option<Uuid>,
+    user_uuid: Option<Uuid>,
 ) -> Result<String, Box<dyn std::error::Error>> {
     let now = Utc::now().timestamp() as usize;
     let expiration = now + (time_in_minutes * 60) as usize;
@@ -31,7 +24,8 @@ pub fn generate_encrypted_token(
         exp: expiration,
         iat: now,
         purpose: purpose.to_string(),
-        uuid: uuid
+        session_uuid: session_uuid,
+        user_uuid: user_uuid,
     };
 
     let serialized = serde_json::to_vec(&claims)?;
