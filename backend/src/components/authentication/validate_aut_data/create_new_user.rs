@@ -76,9 +76,6 @@ pub async fn create_new_user(
             })));
         }
     };
-
-    println!("Created session ID: {:?}", session_id);
-
     let (access_token, refresh_token) = match (
         generate_encrypted_token(
             &claims.sub,
